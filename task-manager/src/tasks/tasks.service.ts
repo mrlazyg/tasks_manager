@@ -16,10 +16,24 @@ export class TasksService {
     private tasksRepository: Repository<Task>,
   ) {}
 
-  // private tasks: Task[] = [];
-  // getAllTasks(): Task[] {
-  //   return this.tasks;
-  // }
+  async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    const { status, search } = filterDto;
+    const query = this.tasksRepository.createQueryBuilder('task');
+
+    if (status) {
+      query.andWhere('task.status= :status', { status });
+    }
+
+    if (search) {
+      // const regex = new RegExp(search);
+      query.andWhere(
+        'LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    return await query.getMany();
+  }
 
   async getTaskById(taskId: string): Promise<Task> {
     const task = await this.tasksRepository.findOne({
@@ -30,6 +44,36 @@ export class TasksService {
     if (!task) {
       throw new NotFoundException(`Task with id ${taskId} was not found!`);
     }
+    return task;
+  }
+
+  async createTask(createTaskObj: CreateTaskDto): Promise<Task> {
+    const { title, description } = createTaskObj;
+    const task = this.tasksRepository.create({
+      title,
+      description,
+      status: TaskStatus.OPEN,
+    });
+    await this.tasksRepository.save(task);
+    return task;
+  }
+
+  async deleteTask(taskId: string): Promise<void> {
+    const result = await this.tasksRepository.delete({ id: taskId });
+    if (!result?.affected) {
+      throw new NotFoundException(`Task with id ${taskId} was not found!`);
+    }
+  }
+
+  async updateTask(
+    taskId: string,
+    status: TaskStatus,
+    title?: string,
+  ): Promise<Task> {
+    const task = await this.getTaskById(taskId);
+    task.status = status;
+    task.title = title || task.title;
+    this.tasksRepository.save(task);
     return task;
   }
 
@@ -57,17 +101,6 @@ export class TasksService {
   //   }
   //   return tasks;
   // }
-
-  async createTask(createTaskObj: CreateTaskDto): Promise<Task> {
-    const { title, description } = createTaskObj;
-    const task = this.tasksRepository.create({
-      title,
-      description,
-      status: TaskStatus.OPEN,
-    });
-    await this.tasksRepository.save(task);
-    return task;
-  }
 
   // createTask(createTaskObj: CreateTaskDto): Task {
   //   const { title, description } = createTaskObj;

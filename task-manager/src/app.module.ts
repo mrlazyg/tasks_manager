@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 // import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import 'dotenv/config';
 
 @Module({
   imports: [
@@ -17,7 +19,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true,
       synchronize: true,
       ssl: true,
+      // entities: ['*.entity{.ts, .js}'],
     }),
+    AuthModule,
   ],
 })
 export class AppModule {}
