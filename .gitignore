@@ -4,6 +4,7 @@
 
 #Env varibles
 .env
+.env.*
 
 # Logs
 logs

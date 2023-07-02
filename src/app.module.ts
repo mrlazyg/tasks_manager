@@ -1,13 +1,18 @@
 import 'dotenv/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
 
+console.log(process.env.NODE_ENV);
 @Module({
+  controllers: [AppController],
+  providers: [AppService],
   imports: [
+    // ? ConfigModule.forRoot({ envFilePath: [`.env.${process.env.NODE_ENV}`] }),
     TasksModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -19,8 +24,26 @@ import { AuthModule } from './auth/auth.module';
       autoLoadEntities: true,
       synchronize: true,
       ssl: true,
-      // entities: ['*.entity{.ts, .js}'],
+      // ? entities: ['*.entity{.ts, .js}'],
     }),
+    // ? Configuration for ConfigModule
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: async (configService: ConfigService) => {
+    //     return {
+    //       type: 'postgres',
+    //       host: configService.get('POSTGRES_HOST'),
+    //       port: configService.get('POSTGRES_PORT'),
+    //       username: configService.get('POSTGRES_USER'),
+    //       password: configService.get('POSTGRES_PASSWORD'),
+    //       database: configService.get('POSTGRES_DATABASE'),
+    //       autoLoadEntities: true,
+    //       synchronize: true,
+    //       ssl: true,
+    //     };
+    //   },
+    // }),
     AuthModule,
   ],
 })
