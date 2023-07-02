@@ -37,7 +37,7 @@ export class AuthService {
       if (verifiedOk) {
         const payload: JwtPayload = { username };
         const token: string = await this.jwtService.signAsync(payload);
-        return { token };
+        return { accessToken: token };
       } else {
         throw new UnauthorizedException('Please check your login credentials');
       }

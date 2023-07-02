@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "6.1",
     "@nestjs/passport": "6.1",
@@ -81,6 +82,6 @@
     "testEnvironment": "node"
   },
   "engines": {
-    "node":  "^14.20.0"
+    "node": "18.x"
   }
 }
